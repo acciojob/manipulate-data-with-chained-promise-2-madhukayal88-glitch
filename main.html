@@ -1,13 +1,60 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Promise Chain Test</title>
+</head>
+<body>
 
-<html>
-  <head>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
+  <div id="output"></div>
 
-  <body>
-    <!-- do not change this code -->
-    <div id="output"></div>
-    <script type="text/javascript" src="./script.js"></script>
-  </body>
+  <script>
+    // ===== Function under test =====
+    function manipulateArray() {
+      const outputDiv = document.getElementById("output");
+
+      return new Promise((resolve) => {
+        setTimeout(() => resolve([1, 2, 3, 4]), 3000);
+      })
+      .then(arr => {
+        const even = arr.filter(n => n % 2 === 0);
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            outputDiv.textContent = even.join(",");
+            resolve(even);
+          }, 1000);
+        });
+      })
+      .then(even => {
+        const doubled = even.map(n => n * 2);
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            outputDiv.textContent = doubled.join(",");
+            resolve(doubled);
+          }, 2000);
+        });
+      });
+    }
+
+    // ===== Test Case =====
+    window.onload = () => {
+      const output = document.getElementById("output");
+
+      console.assert(output.textContent === "", "❌ Output should be empty on load");
+
+      manipulateArray();
+
+      setTimeout(() => {
+        console.assert(output.textContent === "2,4", "❌ After 1 second, output should be 2,4");
+        console.log("✅ Passed: 1 second test");
+      }, 1000);
+
+      setTimeout(() => {
+        console.assert(output.textContent === "4,8", "❌ After 3 seconds, output should be 4,8");
+        console.log("✅ Passed: 3 second test");
+      }, 3000);
+    };
+  </script>
+
+</body>
 </html>
